@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>js实现模糊查询</title>
+  <style>
+    .wrap{width:50%;margin:0 auto;}
+    #searchShow{font-size:12px;border:1px solid #ccc; border-collapse: collapse;margin-top:20px;}
+    #searchShow td{border:1px solid #ccc;padding:4px 5px;}
+    #searchShow tr:nth-child(even) {  
+        background: hsl(180, 35%, 58%);  
+        color: #fff;
+    }  
+    #searchShow tr:nth-child(odd) {  
+        background: White;  
+    } 
+  </style>
+</head>
+<body>
+  <div class="wrap" id="wrap">
+      <input type='text' value="" id='searchKey'/>
+      <input type='button' value="查询" id='searchBtn'/>
+      <table id='searchShow'></table>
+  </div>
+  
+</body>
+<script src="js/jquery.min.js"></script>
+<script>
+
+
+let listData = ["上海市","黄浦区","卢湾区","徐汇区","长宁区","静安区","普陀区",
+  "闸北区","杨浦区","虹口区","闵行区","宝山区","嘉定区","浦东新区",
+  "金山区","松江区","青浦区","南汇区","奉贤区","崇明县" ];
+renderTab(listData);//渲染表格
+  
+
+//加载本地数据
+// $.ajax({
+// 		  type    : "get",
+// 		  url     : "data.json",
+// 		  success : function(json){
+// 					console.log(json);
+//           listData = json;
+//           renderTab(listData);//渲染表格
+// 		  }
+// 	});
+
+//键入触发事件
+  $('#searchKey').keyup(function(){
+      var searchResult = fuzzySearch();
+      renderTab(searchResult);
+  });
+
+//点击查询按钮触发事件
+  $('#searchBtn').click(function(){
+      var searchResult = fuzzySearch();
+      renderTab(searchResult);
+  });
+
+// 正则表达式实现模糊查询
+function fuzzySearch(){
+  var keyWord = $('#searchKey').val();
+  var len = listData.length;
+  var arr = [];
+  var reg = new RegExp(keyWord);
+  for(var i=0;i<len;i++){
+      //如果字符串中不包含目标字符会返回-1
+      if(listData[i].match(reg)){
+          arr.push(listData[i]);
+      }
+  }
+  return arr;
+}
+
+//渲染表格 
+function renderTab(list){
+  if(list.length==0){
+    $('#searchShow').html('未查询到关键字相关结果');
+    return;
+  }
+  var colStr = '';
+  for(var i=0,len=list.length;i<len;i++){
+    colStr+="<tr><td>"+list[i]+"</td></tr>";
+  }
+  $('#searchShow').html(colStr);
+}
+</script>
+</html>
